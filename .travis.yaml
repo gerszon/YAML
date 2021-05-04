@@ -1,0 +1,9 @@
+sudo: required
+services: docker
+
+beforeInstall:
+-   docker build -t gerszon/YAML -f dockerfile.dev .
+
+#-- --coverage = is to run the test once
+script:
+- docker run gerszon/YAML npm run test -- --coverage
