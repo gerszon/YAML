@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: snipeit-deployment
+  namespace: snipeit
+  labels:
+    app: snipeit
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: snipeit
+  template:
+    metadata:
+      labels:
+        app: snipeit
+    spec:
+      containers:
+      - name: snipeit
+        image: snipe/snipe-it
+        ports:
+        - containerPort: 80
+        env:
+        - name: APP_ENV
+          value: "production"
+        - name: APP_DEBUG
+          value: "false"
+        - name: APP_KEY
+          value: "vwv2cebEuLu2dBAKFpvv1ltGq3ecYu0+pvErtZjDnSU="
+        - name: APP_URL
+          value: "http://192.168.170.30:31127/setup"    
+        - name: APP_TIMEZONE
+          value: "US/Pacific"
+        - name: APP_LOCALE
+          value: "en"   
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: snipeit-nodeport
+  namespace: snipeit
+spec:
+  selector:
+    app: snipeit
+  type: NodePort
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+      name: http
+    - protocol: TCP
+      port: 443
+      name: https

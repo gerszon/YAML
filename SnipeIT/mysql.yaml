@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mysql-deployment
+  namespace: snipeit
+  labels:
+    app: mysql
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mysql
+  template:
+    metadata:
+      labels:
+        app: mysql
+    spec:
+      containers:
+      - name: mysql
+        image: mysql
+        ports:
+        - containerPort: 8080
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          value: Abcdef0321!!
+         # valueFrom:
+          #  secretKeyRef:
+           #   name: snipeit-secret
+            #  key: snipeit-root-password
+        - name: MYSQL_USER
+          valueFrom:
+            secretKeyRef:
+              name: snipeit-secret
+              key: snipeit-root-username
+        - name: MYSQL_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: snipeit-secret
+              key: snipeit-root-password

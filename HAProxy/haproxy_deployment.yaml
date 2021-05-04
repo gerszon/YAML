@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: haproxy
+spec:
+  replicas: 3
+  template:
+    metadata:
+      labels:
+        app: haproxy
+    spec:
+      containers:
+      - name: haproxy
+        image:
+        ports:
+        - containerPort: 8000
+          name: http
+        - containerPort: 9000
+          name: https
+        - containerPort: 26999
+          name: stats
+        readinessProbe:
+          initialDelaySeconds: 15
+          periodSeconds: 5
+          timeoutSeconds: 1
+          successThreshold: 2
+          failureThreshold: 2
+          tcpSocket:
+            port: 26999
+---
+apiVersion: apps/v1
+kind: Service
+metadata:
+  name: haproxy-service
+spec:
+  selector:
+    app:  haproxy
+  port:
+    - name: http
+      protocol: TCP
+      port: 8000
+      NodePort: 31000
+    - name: https
+      protocol: TCP
+      port: 9000
+      NodePort: 31001
+    - name: stats
+      protocol: TCP
+      port: 26999
+      NodePort: 31002
+  type: NodePort
